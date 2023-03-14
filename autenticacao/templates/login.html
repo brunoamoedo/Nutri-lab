@@ -3,12 +3,31 @@
 
 {% block 'head' %}
     <link rel='stylesheet' href="{% static 'autenticacao/css/style.css' %}">
+	<style>
+	.estilo_link{
+		text-decoration:none;
+		color:#32CD32;
+	}
+	.estilo_link:hover{
+		text-decoration:none;
+		color:#00FF00;
+	}
+	</style>
 {% endblock %}
 
 {% block 'titulo' %}Cadastre-se{% endblock %}
 {% block 'body' %}
 <div class="container">
 		<h1>Login</h1>
+		{% if messages %}
+			<br>
+		
+			{% for message in messages %}
+				<div class="alert {{message.tags}}">
+					{{message}}
+				</div>
+			{% endfor %}
+		{% endif %}
 		<form action="{% url 'login' %}" method="POST">{% csrf_token %}
 			<label for="login">Login:</label>
 			<input type="text" id="login" name="login" required>
@@ -17,6 +36,7 @@
 			<input type="password" id="senha" name="senha" required>
 
 			<input type="submit" value="Entrar">
+			<span style="float:right"><a class="estilo_link" href="{% url 'cadastro' %}">Registre-se</a></span>
 		</form>
 	</div>
 {% endblock %}

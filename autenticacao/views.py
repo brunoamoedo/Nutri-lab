@@ -1,10 +1,13 @@
-from .utils import password_is_valid
+from .utils import *
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages
-from time import sleep
+from django.contrib import auth
+import os
+from django.conf import settings
+
 # Create your views here.
 def cadastro(request):
     if request.method == "GET":
@@ -22,15 +25,31 @@ def cadastro(request):
             password=senha,
             is_active=False)
             user.save()
+
+            path_template = os.path.join(settings.BASE_DIR, 'autenticacao/templates/emails/cadastro_confirmado.html')
+            email_html(path_template, 'Cadastro confirmado', [email,], username=nome)
             messages.add_message(request,constants.SUCCESS,'Usuario cadastro com sucesso!')
-            sleep(3)
             return redirect('/auth/login')
         except Exception:
+           
             messages.add_message(request,constants.ERROR,'Erro interno do sistema')
             return redirect('/auth/cadastro')
 
 def login(request):
     if request.method == "GET":
-        return render(request,'login.html')
+        if request.user.is_authenticated:
+            return redirect('/')
+        return render(request, 'login.html')
     elif request.method == "POST":
-        return HttpResponse("Testando")
+        username = request.POST.get('login')
+        senha = request.POST.get('senha')
+        usuario = auth.authenticate(username=username, password=senha)
+        if not usuario:
+            messages.add_message(request, constants.ERROR, 'Username ou senha invalidos')
+            return redirect('/auth/login')
+        else:
+            auth.login(request, usuario)
+            return redirect('/')
+def sair(request):
+    auth.logout(request)
+    return redirect('auth/login')
