@@ -28,7 +28,8 @@
 				</div>
 			{% endfor %}
 		{% endif %}
-		<form action="{% url 'login' %}" method="POST">{% csrf_token %}
+		<form action="{% url 'login' %}" method="POST">
+		{% csrf_token %}
 			<label for="login">Login:</label>
 			<input type="text" id="login" name="login" required>
 
